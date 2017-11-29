@@ -1,0 +1,5 @@
+Change navbar on all pages based on whether the user is logged in or out. If logged in, there should be a button to see room history of past rooms booked.
+
+For every room booked in room history page, there should be an option to write a review. We need a review form covering rooms, service and breakfast.
+
+Add constraints on what input can be given when registering and logging in. Is login info correct? If so, re-direct user to home page with altered nabber.
