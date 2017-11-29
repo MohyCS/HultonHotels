@@ -12,38 +12,46 @@ import(
 var db *sql.DB
 
 type room_entry struct {
-	hotel_id int
-	room_description string
+	Hotel_id int
+	Room_description string
 }
 
 func room_data_fetcher(w http.ResponseWriter, r *http.Request) {
 	var rooms []room_entry
 
-	state := r.URL.Query()["state"]	//gets state query parameter that user passed on GET request
-
+	state := r.URL.Query()["state"][0]	//gets state query parameter that user passed on GET request
+	
 	//gets hotel rooms available in that state
 	rows, err := db.Query("SELECT r.HotelID, r.Description FROM Room r, Hotel h WHERE r.HotelID = h.HotelID and h.State=?", state)
+	log.Println(rows)
 	if err != nil {
-        	log.Fatal(err)
+		log.Println("1")
+        log.Fatal(err)
 	}
 	defer rows.Close()
 
 	for rows.Next() {
         	var entry room_entry
-        	if err := rows.Scan(&(entry.hotel_id), &(entry.room_description)); err != nil {
+        	if err := rows.Scan(&(entry.Hotel_id), &(entry.Room_description)); err != nil {
+					log.Println("5")
                 	log.Fatal(err)
         	}
-
+			
 		//append room_entry to the rooms array
 		rooms = append(rooms, entry)
 	}
-
+	
+	
 	if err := rows.Err(); err != nil {
-        	log.Fatal(err)
+		log.Println("2")
+        log.Fatal(err)
 	}
 
-	json, err := json.Marshal(rooms)
+	json1, err := json.Marshal(rooms)
+	log.Println(rooms)
+	log.Println(string(json1))
 	if err != nil {
+		log.Println("3")
 		log.Fatal(err)
 	}
 
@@ -51,14 +59,15 @@ func room_data_fetcher(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("At the end\n")
 	
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(json)
+	w.Write(json1)
 }
 
 func main() {
 	//open database
 	var err error
-	db, err = sql.Open("mysql", "root:120490Arkadi@tcp(172.31.130.134:3306)/hulton")
+	db, err = sql.Open("mysql", "root:120490Arkadi@/hulton")
 	if err != nil {
+		log.Println("4")
 		log.Fatal(err)
 	}
 
