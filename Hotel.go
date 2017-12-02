@@ -6,14 +6,97 @@ import(
 	"database/sql"
 	"log"
 	"fmt"
+	"time"
 	"encoding/json"
+	"github.com/dgrijalva/jwt-go"
 )
 
+//make the db accessable in all methods
 var db *sql.DB
 
+//room enties returned to book rooms page
 type room_entry struct {
 	Hotel_id int
 	Room_description string
+}
+
+type Claims struct {
+	email string `json:"email"`
+	jwt.StandardClaims
+}
+
+func login(w http.ResponseWriter, r *http.Request) {
+	setToken(w, r, 0)
+	return
+}
+
+func register(w http.ResponseWriter, r *http.Request) {
+	setToken(w, r, 1)
+	return
+}
+
+//create a JWT for the client
+func setToken(w http.ResponseWriter, r *http.Request, loginOrRegister int) {
+	r.ParseForm()	//parse url parameters passed
+
+	email := r.Form["email"][0]
+
+	//if login check to see if user is already in the databse
+	if loginOrRegister == 0 {
+		var name1 string
+		err := db.QueryRow("SELECT c.Name from Customer c where Email=?", email).Scan(&name1)
+
+		if err == sql.ErrNoRows {
+			//TODO: should return error message to the client
+			log.Fatal("No customer matching those credentials")
+		} else if err != nil {
+        		log.Fatal(err)
+		}
+	} else {
+		//register user
+		name := r.Form["Name"][0]
+		address := r.Form["Address"][0]
+		phone_no := r.Form["Phone_no"][0]
+
+		//create user in database
+		_, err := db.Exec("INSERT INTO Customer values(?, ?, ?, ?)", name, email, address, phone_no)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	// Expires the token and cookie in 1 hour
+	expireToken := time.Now().Add(time.Hour * 1).Unix()
+	expireCookie := time.Now().Add(time.Hour * 1)
+
+	// We'll manually assign the claims but in production you'd insert values from a database 
+	claims := Claims {
+		email,
+		jwt.StandardClaims {
+			ExpiresAt: expireToken,
+			Issuer:    "localhost:8081",
+		},
+	}
+
+	// Create the token using your claims
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// Signs the token with a secret.    
+	signedToken, _ := token.SignedString([]byte("secret"))
+
+	// Place the token in the client's cookie 
+	cookie := http.Cookie{Name: "Auth", Value: signedToken, Expires: expireCookie, HttpOnly: true}
+	http.SetCookie(w, &cookie)
+
+	// Redirect the user back to the home page
+	http.Redirect(w, r, "/", 307)
+}
+
+//deletes the cookie
+func logout(w http.ResponseWriter, r *http.Request){
+	deleteCookie := http.Cookie{Name: "Auth", Value: "none", Expires: time.Now()}
+	http.SetCookie(w, &deleteCookie)
+	return
 }
 
 func room_data_fetcher(w http.ResponseWriter, r *http.Request) {
@@ -62,10 +145,65 @@ func room_data_fetcher(w http.ResponseWriter, r *http.Request) {
 	w.Write(json1)
 }
 
+func submitReview(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()	//parse url parameters passed
+
+	//parse post data
+	rating := r.Form["rating"][0]
+	comment := r.Form["comment"][0]
+	hotel_id := r.Form["hotel_id"][0]
+	room_no := r.Form["room_no"][0]
+	btype := r.Form["btype"][0]
+	stype := r.Form["stype"][0]
+	CID := r.Form["CID"][0]
+
+	//insert review into database
+	_, err := db.Exec("INSERT INTO Review values(?, ?, ?, ?, ?, ?, ?)", rating, comment, hotel_id, room_no, btype, stype, CID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return
+}
+
+func makeReservation(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()	//parse url parameters passed
+
+	//parse post data for credit card info
+	Cnumber := r.Form["card_number"][0]
+	BillingAddr := r.Form["BillingAddr"][0]
+	Name := r.Form["name"][0]
+	securityCode := r.Form["security_code"][0]
+	Type := r.Form["type"][0]
+	ExpDate := r.Form["exp_date"][0]
+
+	//insert credit card into database
+	_, err := db.Exec("INSERT INTO CreditCard values(?, ?, ?, ?, ?, ?)", Cnumber, BillingAddr, Name, securityCode, Type, ExpDate)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//parse post data for reservation
+	ResDate := r.Form["res_date"][0]
+	TotalAmt := r.Form["total_amount"][0]
+	CID := r.Form["customerID"][0]
+
+	//insert a reservation into database
+	_, err = db.Exec("INSERT INTO Reservation values(?, ?, ?, ?, ?, ?, ?)", ResDate, TotalAmt, CID, Cnumber)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return
+
+}
+
 func main() {
 	//open database
 	var err error
 	db, err = sql.Open("mysql", "root:120490Arkadi@/hulton")
+
 	if err != nil {
 		log.Println("4")
 		log.Fatal(err)
@@ -74,6 +212,11 @@ func main() {
 	//serves the static files in directory static
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 	http.HandleFunc("/room_data/", room_data_fetcher)
+	http.HandleFunc("/register/", register)
+	http.HandleFunc("/login/", login)
+	http.HandleFunc("/logout/", logout)
+	http.HandleFunc("/submit_review/", submitReview)
+	http.HandleFunc("/make_reservation/", makeReservation)
 
 	//listens on port 8081
 	log.Fatal(http.ListenAndServe(":8081", nil))
