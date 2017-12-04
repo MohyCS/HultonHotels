@@ -18,6 +18,8 @@ var db *sql.DB
 type room_entry struct {
 	Hotel_id int
 	Room_description string
+	Room_no int
+	Room_price float64
 }
 
 type Claims struct {
@@ -105,7 +107,7 @@ func room_data_fetcher(w http.ResponseWriter, r *http.Request) {
 	state := r.URL.Query()["state"][0]	//gets state query parameter that user passed on GET request
 	
 	//gets hotel rooms available in that state
-	rows, err := db.Query("SELECT r.HotelID, r.Description FROM Room r, Hotel h WHERE r.HotelID = h.HotelID and h.State=?", state)
+	rows, err := db.Query("SELECT r.HotelID, r.Description, r.Room_no, r.Price FROM Room r, Hotel h WHERE r.HotelID = h.HotelID and h.State=?", state)
 	log.Println(rows)
 	if err != nil {
 		log.Println("1")
@@ -115,7 +117,7 @@ func room_data_fetcher(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
         	var entry room_entry
-        	if err := rows.Scan(&(entry.Hotel_id), &(entry.Room_description)); err != nil {
+        	if err := rows.Scan(&(entry.Hotel_id), &(entry.Room_description), &(entry.Room_no), &(entry.Room_price)); err != nil {
 					log.Println("5")
                 	log.Fatal(err)
         	}
