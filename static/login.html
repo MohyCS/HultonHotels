@@ -23,6 +23,8 @@
     <!-- Custom styles for this template -->
     <link href="css/creative.min.css" rel="stylesheet">
 
+    <script src="login_error.js"></script>
+
   </head>
 
   <body id="page-top">
@@ -38,11 +40,10 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <!--Register Button-->
               <a class="nav-link js-scroll-trigger" href="register.html" style="color:black">Register</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#portfolio" style="color:black">Book Now</a>
+              <a class="nav-link js-scroll-trigger" href="book.html" style="color:black">Book Now</a>
             </li>
             <li class="nav-item">
               <a class="nav-link js-scroll-trigger" href="#contact" style="color:black">Contact</a>
@@ -82,34 +83,28 @@
             <div class="cols-sm-10">
               <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
-                <input type="text" class="form-control" name="email" id="email"  placeholder="Enter your Email"/>
+                <input type="text" class="form-control" name="email" id="email"  placeholder="Enter your Email" onkeyup="email_check()"/>
+                &nbsp;&nbsp;&nbsp;
               </div>
+              <br>
+              <p id="email_msg"></p>
             </div>
           </div>
-<!--          
-          <div class="form-group">
-            <label for="username" class="cols-sm-2 control-label">Username</label>
-            <div class="cols-sm-10">
-              <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
-                <input type="text" class="form-control" name="username" id="username"  placeholder="Enter your Username"/>
-              </div>
-            </div>
-          </div>
--->
 
           <div class="form-group">
             <label for="password" class="cols-sm-2 control-label">Password</label>
             <div class="cols-sm-10">
               <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
-                <input type="password" class="form-control" name="password" id="password"  placeholder="Enter your Password"/>
+                <input type="password" class="form-control" name="password" id="password"  placeholder="Enter your Password" onkeyup="password_check()"/>
+                &nbsp;&nbsp;&nbsp;
+                <span id="password_msg"></span>
               </div>
             </div>
           </div>
 
           <div class="form-group ">
-            <a href="http://deepak646.blogspot.in" target="_blank" type="button" id="button" class="btn btn-primary btn-lg btn-block login-button">Login</a>
+            <a href="index.html" target="_blank" type="button" id="button" class="btn btn-primary btn-lg btn-block login-button">Login</a>
           </div>
           
         </form>
