@@ -3,44 +3,12 @@
 
   <head>
     <meta charset="utf-8">
-    <script type = "text/javascript">
-
-    function check_info(){
-
-      var name = document.forms["vforms"]["name"];
-      var email = document.forms["vforms"]["email"];
-      var username = document.forms["vforms"]["username"];
-      var password = document.forms["vforms"]["password"];
-      var cardtype = document.forms["vforms"]["cardtype"];
-      var cardnum = document.forms["vforms"]["cardnum"];
-      var expirdate = document.forms["vforms"]["exirdate"];
-      var seccode = document.forms["vforms"]["seccode"];
-      var address = document.forms["vforms"]["address"];
-
-
-
-
-      if(username=="" || password==""|| cardtype==""|| cardnum==""|| expirdate==""|| seccode==""|| address==""){
-        alert('Please fill in all fields');
-        return false;
-      }
-      else{
-        return true;
-
-      }
-
-
-
-    }
-    
-    
-    
-    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
 
     <title>Hulton Hotels: Register</title>
+
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -55,6 +23,8 @@
 
     <!-- Custom styles for this template -->
     <link href="css/creative.min.css" rel="stylesheet">
+
+    <script src="validation.js"></script>
 
   </head>
 
@@ -110,110 +80,140 @@
 			<div class="row main">
 				<div  class="col-lg-5 mx-auto text-left" style="margin-bottom: 4cm;" >
 				<h5 style="text-align: center"><strong>Sign up once and book any of our rooms!</strong></h5>
-					<form class="" method="post" action="#" onsubmit="return check_info();" name = "vform">
+					<form class="" method="post" action="index.html">
 						
 						<div class="form-group">
 							<label for="name" class="cols-sm-2 control-label">Your Name</label>
-							<div class="cols-sm-10">
+						  <div class="cols-sm-10">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
-									<input type="text" class="form-control" name="name" id="name"  placeholder="Enter your Name"/>
-								</div>
-							</div>
-						</div>
+                  <input type="text" class="form-control" name="name" id="name"  placeholder="Enter your Name"  onkeyup="name_check()" />
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <br>
+                <p id="name_msg"></p>
+              </div>
+            </div>
 
 						<div class="form-group">
 							<label for="email" class="cols-sm-2 control-label">Your Email</label>
 							<div class="cols-sm-10">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
-									<input type="text" class="form-control" name="email" id="email"  placeholder="Enter your Email"/>
-								</div>
-							</div>
-						</div>
+                  <input type="text" class="form-control" name="email" id="email"  placeholder="Enter your Email" onkeyup="email_check()" />
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <br>
+                <p id="email_msg"></p>
+              </div>
+            </div>
 
 						<div class="form-group">
 							<label for="username" class="cols-sm-2 control-label">Username</label>
 							<div class="cols-sm-10">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
-									<input type="text" class="form-control" name="username" id="username"  placeholder="Enter your Username"/>
-								</div>
-							</div>
-						</div>
+                  <input type="text" class="form-control" name="username" id="username"  placeholder="Enter your Username" onkeyup="username_check()"/>
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <br>
+                <p id="username_msg"></p>
+              </div>
+            </div>
 
 						<div class="form-group">
 							<label for="password" class="cols-sm-2 control-label">Password</label>
 							<div class="cols-sm-10">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
-									<input type="password" class="form-control" name="password" id="password"  placeholder="Enter your Password"/>
-								</div>
-							</div>
-						</div>
+                  <input type="password" class="form-control" name="password" id="password"  placeholder="Enter your Password" onkeyup="password_check()"/>
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <br>
+                <p id="password_msg"></p>
+              </div>
+            </div>
 
 						<div class="form-group">
 							<label for="confirm" class="cols-sm-2 control-label">Confirm Password</label>
 							<div class="cols-sm-10">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
-									<input type="password" class="form-control" name="confirm" id="confirm"  placeholder="Confirm your Password"/>
-								</div>
-							</div>
-                        </div>
+                  <input type="password" class="form-control" name="confirm" id="confirm"  placeholder="Confirm your Password" onkeyup="confirm_check()"/>
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <br>
+                <p id="confirm_msg"></p>
+              </div>
+            </div>
+            
+            <div class="form-group">
+							<label for="cardtype" class="cols-sm-2 control-label">Credit Card type</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-credit-card fa-lg" aria-hidden="true"></i></span>
+                  <input type="text" class="form-control" name="cardtype" id="cardtype"  placeholder="Enter your credit card type" onkeyup="cardtype_check()"/>
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <br>
+                <p id="cardtype_msg"></p>
+              </div>
+            </div>
                         
-                        <div class="form-group">
-							<label for="confirm" class="cols-sm-2 control-label">Credit Card type</label>
+            <div class="form-group">
+							<label for="cardnum" class="cols-sm-2 control-label">Credit Card number</label>
 							<div class="cols-sm-10">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-credit-card fa-lg" aria-hidden="true"></i></span>
-									<input type="cardtype" class="form-control" name="cardtype" id="cardtype"  placeholder="Enter your credit card type"/>
-								</div>
-							</div>
-                        </div>
-                        
-                        <div class="form-group">
-							<label for="confirm" class="cols-sm-2 control-label">Credit Card number</label>
-							<div class="cols-sm-10">
-								<div class="input-group">
-									<span class="input-group-addon"><i class="fa fa-credit-card fa-lg" aria-hidden="true"></i></span>
-									<input type="cardnum" class="form-control" name="cardnum" id="cardnum"  placeholder="Enter your credit card number"/>
-								</div>
-							</div>
+                  <input type="text" class="form-control" name="cardnum" id="cardnum"  placeholder="Enter your credit card number" onkeyup="cardnum_check()"/>
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <br>
+                <p id="cardnum_msg"></p>
+              </div>
             </div>
             
             <div class="form-group">
-							<label for="confirm" class="cols-sm-2 control-label">Credit Card expiration date</label>
+							<label for="expirdate" class="cols-sm-2 control-label">Credit Card expiration date (MM/YY)</label>
 							<div class="cols-sm-10">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-credit-card fa-lg" aria-hidden="true"></i></span>
-									<input type="expirdate" class="form-control" name="expirdate" id="expirdate"  placeholder="Enter your credit card expiration date"/>
-								</div>
-							</div>
+                  <input type="text" class="form-control" name="expirdate" id="expirdate"  placeholder="Enter your credit card expiration date" onkeyup="expirdate_check()" />
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <br>
+                <p id="expirdate_msg"></p>
+              </div>
             </div>
             
             <div class="form-group">
-							<label for="confirm" class="cols-sm-2 control-label">Credit Card Security Code</label>
+							<label for="seccode" class="cols-sm-2 control-label">Credit Card Security Code</label>
 							<div class="cols-sm-10">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-credit-card fa-lg" aria-hidden="true"></i></span>
-									<input type="seccode" class="form-control" name="seccode" id="seccode"  placeholder="Enter your credit card security code"/>
-								</div>
-							</div>
+                  <input type="password" class="form-control" name="seccode" id="seccode"  placeholder="Enter your credit card security code" onkeyup="seccode_check()"/>
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <br>
+                <p id="seccode_msg"></p>
+              </div>
             </div>
             
             <div class="form-group">
-							<label for="confirm" class="cols-sm-2 control-label">Billing Address</label>
+							<label for="address" class="cols-sm-2 control-label">Billing Address</label>
 							<div class="cols-sm-10">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-home fa-lg" aria-hidden="true"></i></span>
-									<input type="address" class="form-control" name="address" id="address"  placeholder="Enter your billing address"/>
-								</div>
-							</div>
-						</div>
+                  <input type="text" class="form-control" name="address" id="address"  placeholder="Enter your billing address" onkeyup="address_check()" />
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <br>
+                <p id="address_msg"></p>
+              </div>
+            </div>
 
 						<div class="form-group ">
-							<a href="" target="_blank" type="button" id="button" class="btn btn-primary btn-lg btn-block login-button">Register</a>
+							<a href="#register" target="" type="button" id="button" class="btn btn-primary btn-lg btn-block login-button">Register</a>
 						</div>
 						
 					</form>
@@ -257,6 +257,7 @@
 
     <!-- Custom scripts for this template -->
     <script src="js/creative.min.js"></script>
+    <script src="validation.js"></script>
 
   </body>
 
