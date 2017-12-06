@@ -33,6 +33,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
+	log.Println("REGISTERING")
 	setToken(w, r, 1)
 	return
 }
@@ -56,9 +57,10 @@ func setToken(w http.ResponseWriter, r *http.Request, loginOrRegister int) {
 		}
 	} else {
 		//register user
-		name := r.Form["Name"][0]
-		address := r.Form["Address"][0]
-		phone_no := r.Form["Phone_no"][0]
+		name := r.Form["name"][0]
+		log.Println(name)
+		address := r.Form["address"][0]
+		phone_no := r.Form["phone_no"][0]
 
 		//create user in database
 		_, err := db.Exec("INSERT INTO Customer values(?, ?, ?, ?)", name, email, address, phone_no)
