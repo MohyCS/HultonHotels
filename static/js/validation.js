@@ -98,15 +98,31 @@ function email_check()
 
 function cardnum_check()
 {
+    var cardtype = document.getElementById("cardtype").value;
     var cardnum = document.getElementById("cardnum").value;
     var cardnum_msg = document.getElementById('cardnum_msg');
-    var amex = /^(?:3[47][0-9]{13})$/;
-    var visa = /^(?:4[0-9]{12}(?:[0-9]{3})?)$/;
-    var mc = /^(?:5[1-5][0-9]{14})$/;   
-    var disc = /^(?:6(?:011|5[0-9][0-9])[0-9]{12})$/;  
+    var amex1 = /^(?:3[47][0-9]{13})$/;
+    var visa1 = /^(?:4[0-9]{12}(?:[0-9]{3})?)$/;
+    var mc1 = /^(?:5[1-5][0-9]{14})$/;   
+    var disc1 = /^(?:6(?:011|5[0-9][0-9])[0-9]{12})$/;  
 
     onkeyup = function(){
-        if(amex.test(cardnum)||visa.test(cardnum)||mc.test(cardnum)||disc.test(cardnum) )
+        if(cardtype=="amex" && amex1.test(cardnum))
+        { 
+            cardnum_msg.innerHTML = "";
+            return true;
+        }
+        if(cardtype=="visa" && visa1.test(cardnum))
+        { 
+            cardnum_msg.innerHTML = "";
+            return true;
+        }
+        if(cardtype=="mc" && mc1.test(cardnum))
+        { 
+            cardnum_msg.innerHTML = "";
+            return true;
+        }
+        if(cardtype=="disc" && disc1.test(cardnum))
         { 
             cardnum_msg.innerHTML = "";
             return true;
