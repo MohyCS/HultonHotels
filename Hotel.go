@@ -33,6 +33,37 @@ func login(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+func checkLoginStatus(w http.ResponseWriter, r *http.Request) {
+	//gets the cookie
+	_, err := r.Cookie("Auth")
+
+	if err == http.ErrNoCookie {
+		//not logged in
+		login_status := 0
+
+		data, err := json.Marshal(login_status)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(data)
+	} else if err != nil {
+		log.Fatal(err)
+	} else {
+		//logged in
+		login_status := 1
+
+		data, err := json.Marshal(login_status)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(data)
+	}
+}
+
 func register(w http.ResponseWriter, r *http.Request) {
 	log.Println("REGISTERING")
 	setToken(w, r, 1)
@@ -101,7 +132,7 @@ func setToken(w http.ResponseWriter, r *http.Request, loginOrRegister int) {
 	signedToken, _ := token.SignedString([]byte("secret"))
 
 	// Place the token in the client's cookie 
-	cookie := http.Cookie{Name: "Auth", Value: signedToken, Expires: expireCookie, HttpOnly: true}
+	cookie := http.Cookie{Name: "Auth", Domain: "localhost", Path: "/", Value: signedToken, Expires: expireCookie}
 	http.SetCookie(w, &cookie)
 
 	// Redirect the user back to the home page
@@ -110,7 +141,7 @@ func setToken(w http.ResponseWriter, r *http.Request, loginOrRegister int) {
 
 //deletes the cookie
 func logout(w http.ResponseWriter, r *http.Request){
-	deleteCookie := http.Cookie{Name: "Auth", Value: "none", Expires: time.Now()}
+	deleteCookie := http.Cookie{Name: "Auth", Domain: "localhost", Path: "/", Value: "none", Expires: time.Now()}
 	http.SetCookie(w, &deleteCookie)
 	return
 }
@@ -233,6 +264,7 @@ func main() {
 	http.HandleFunc("/logout/", logout)
 	http.HandleFunc("/submit_review/", submitReview)
 	http.HandleFunc("/make_reservation/", makeReservation)
+	http.HandleFunc("/login_status/", checkLoginStatus)
 
 	//listens on port 8081
 	log.Fatal(http.ListenAndServe(":8081", nil))
