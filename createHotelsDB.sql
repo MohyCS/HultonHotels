@@ -1,7 +1,3 @@
-create database hotelreservation;
-
-use hotelreservation;
-
 create table Hotel(HotelID int, Street varchar(15), City varchar(15), State char(2), Country varchar(20), Zip char(5), primary key(HotelID));
 
 create table Phone_no(phone_no char(10), HotelID int, primary key(phone_no), foreign key (HotelID) references Hotel(HotelID) on delete cascade);

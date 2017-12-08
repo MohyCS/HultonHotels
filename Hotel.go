@@ -8,6 +8,7 @@ import(
 	"fmt"
 	"time"
 	"encoding/json"
+	"math/rand"
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -62,9 +63,20 @@ func setToken(w http.ResponseWriter, r *http.Request, loginOrRegister int) {
 		address := r.Form["address"][0]
 		phone_no := r.Form["phone_no"][0]
 
+		//check to see if user is already in the database
+		var email1 string
+		err := db.QueryRow("SELECT c.Email from Customer c where c.Email=?", email).Scan(&email1)
+
+		if err != sql.ErrNoRows {
+			log.Fatal("Can't register User, User already exists")
+		}
+
+		//if user doesn't already exit, register the user
+		customerId := rand.Intn(32767)		//generate random customer ID
 		//create user in database
-		_, err := db.Exec("INSERT INTO Customer values(?, ?, ?, ?)", name, email, address, phone_no)
+		_, err = db.Exec("INSERT INTO Customer values(?, ?, ?, ?, ?)", customerId, name, email, address, phone_no)
 		if err != nil {
+			log.Println("INSERTING USER FAILED")
 			log.Fatal(err)
 		}
 	}
@@ -206,7 +218,7 @@ func makeReservation(w http.ResponseWriter, r *http.Request) {
 func main() {
 	//open database
 	var err error
-	db, err = sql.Open("mysql", "root:120490Arkadi@/hulton")
+	db, err = sql.Open("mysql", "viewer:Rutgers568$@/Hulton")
 
 	if err != nil {
 		log.Println("4")
