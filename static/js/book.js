@@ -14,14 +14,6 @@ function getRoomsByState() {
                 <p class="room_entry_description">Description</p>
 				<p class="room_entry_description">Price: _price</p>
                 <div class="room_entry_buttons">
-                    <p style="">    
-                        <a class="btn btn-primary text-center room_entry_review" 
-                            href="room.html"
-                            style="background-color:red;"
-                            onclick="">
-                            Write a Review
-                        </a>
-                    </p>
                     <p>    
                         <a class="btn btn-primary text-center room_entry_book" 
                             href="confirmation.html?hotel_name=`+data[i].Hotel_id+`&description=`+data[i].Room_description+`&num=`+data[i].Room_no+`&price=`+data[i].Room_price+`"
@@ -34,9 +26,9 @@ function getRoomsByState() {
 			</div>`;
 			
 			console.log("hi")
-			room_entry_html_string = room_entry_html_string.replace("Hotel_Name", data[i].Hotel_id);
+			room_entry_html_string = room_entry_html_string.replace("Hotel_Name", "Hulton @ " + data[i].City);
 			room_entry_html_string = room_entry_html_string.replace("Description", data[i].Room_description);
-			room_entry_html_string = room_entry_html_string.replace("_price", data[i].Room_price);
+			room_entry_html_string = room_entry_html_string.replace("_price", "$" + data[i].Room_price);
 			
 			
 			//convert html string to DOM

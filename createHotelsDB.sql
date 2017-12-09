@@ -19,3 +19,6 @@ create table Reservation(InvoiceNo int, ResDate date, TotalAmt float, CID int, C
 create table BreakfastIncluded(InvoiceNo int, HotelID int, bType varchar(15), primary key (InvoiceNo, HotelID, bType), foreign key (InvoiceNo) references Reservation(InvoiceNo), foreign key (HotelID, bType) references Breakfast(HotelID, bType));
 
 create table ServiceIncluded(InvoiceNo int, HotelID int, sType varchar(15), primary key (InvoiceNo, HotelID, sType), foreign key (InvoiceNo) references Reservation(InvoiceNo), foreign key (HotelID, sType) references Service(HotelID, sType));
+
+create table RoomReserve(InvoiceNo int, HotelID int, Room_no int, OutDate date, InDate date, NoOfDays int, primary key (InvoiceNo, HotelID, Room_no), foreign key (InvoiceNo) references Reservation(InvoiceNo), foreign key (HotelID, Room_no) references Room(HotelID, Room_no));
+
