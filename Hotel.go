@@ -65,7 +65,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-//create a JWT for the client
+//create a cookie for the client
 func setToken(w http.ResponseWriter, r *http.Request, loginOrRegister int) {
 	r.ParseForm()	//parse url parameters passed
 
@@ -88,6 +88,10 @@ func setToken(w http.ResponseWriter, r *http.Request, loginOrRegister int) {
 		address := r.Form["address"][0]
 		phone_no := r.Form["phone_no"][0]
 
+		cardnum := r.Form["cardnum"][0]
+		seccode := r.Form["seccode"][0]
+		cardtype := r.Form["cardtype"][0]
+
 		//check to see if user is already in the database
 		var email1 string
 		err := db.QueryRow("SELECT c.Email from Customer c where c.Email=?", email).Scan(&email1)
@@ -104,6 +108,14 @@ func setToken(w http.ResponseWriter, r *http.Request, loginOrRegister int) {
 			log.Println("INSERTING USER FAILED")
 			log.Fatal(err)
 		}
+
+		//add credit card into database
+		_, err = db.Exec("INSERT INTO CreditCard values(?, ?, ?, ?, ?)", cardnum, address, name, seccode, cardtype, CID)
+		if err != nil {
+			log.Println("INSERTING CREDIT CARD FAILED")
+			log.Fatal(err)
+		}
+
 	}
 
 	expireCookie := time.Now().Add(time.Hour * 1)
@@ -240,34 +252,39 @@ func submitReview(w http.ResponseWriter, r *http.Request) {
 func makeReservation(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()	//parse url parameters passed
 
-	//parse post data for credit card info
-	Cnumber := r.Form["card_number"][0]
-	BillingAddr := r.Form["BillingAddr"][0]
-	Name := r.Form["name"][0]
-	securityCode := r.Form["security_code"][0]
-	Type := r.Form["type"][0]
-	ExpDate := r.Form["exp_date"][0]
-
-	//insert credit card into database
-	_, err := db.Exec("INSERT INTO CreditCard values(?, ?, ?, ?, ?, ?)", Cnumber, BillingAddr, Name, securityCode, Type, ExpDate)
+	cookie, err := r.Cookie("Auth")
+	if err != nil {
+		log.Fatal(err)
+	}
+	
+	//customer ID
+	CID, err := strconv.Atoi(cookie.Value)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	//parse post data for reservation
-	ResDate := r.Form["res_date"][0]
-	TotalAmt := r.Form["total_amount"][0]
-	CID := r.Form["customerID"][0]
+	//get credit card for that customer
+	var string cnumber;
+	err := db.QueryRow("SELECT c.Cnumber from CreditCard c, Customer c1 where c.CID=c1.CID and c1.Email=?", email).Scan(&cnumber)
 
-	//insert a reservation into database
-	_, err = db.Exec("INSERT INTO Reservation values(?, ?, ?, ?, ?, ?, ?)", ResDate, TotalAmt, CID, Cnumber)
+	if err == sql.ErrNoRows {
+		//TODO: should return error message to the client
+		log.Fatal("No customer matching those credentials")
+	} else if err != nil {
+       		log.Fatal(err)
+	}
 
+	InvoiceNo := rand.Intn(32767)	//generate random Invoice No
+	totalamt := r.Form["price"][0]	//total amount
+	year, month, day := time.Now().Date()	//resdate info
+
+	_, err := db.Exec("INSERT INTO Reservation values(?, ?, ?, ?, ?, ?)", InvoiceNo, year+"-"+month+"-"+day, totalamt, cnumber)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return
-
+	indate := strings.Split(r.Form["indate"][0], "-")	//Date reservation starts
+	outdate := strings.Split(r.Form["outdate"][0], "-")	//Date reservation ends
 }
 
 func main() {
