@@ -1,39 +1,38 @@
-function getReviewsByRoomIDandReviewID() {
+$(document).ready(function() {
 	console.log("here")
-	var state = $('#review_state_selection').find(":selected").text();
+	var hotel_id = getParameterByName('hotel_id')
+	var room_no = getParameterByName('num')
 
-	$.get("/review_data/", {state: state}, function(data) {
+	$.get("/review_data/", {hotel_id: hotel_id, room_no: room_no}, function(data) {
 		console.log(data)
 		for (i = 0; i < data.length; i++) {
-			
+			let hotel_name = "Hulton Hotels @ " + data[i].City + ", Room #: " + data[i].Room_no;
+
 			//html string of DOM element we want to append
-			var review_entry_html_string = `<div class="review_entry">
-            <div class="review_entry_data">
-                <p class="room_entry_rating">_rating</p>
-				<p class="room_entry_description">Description: _description</p>
-                <div class="room_entry_buttons">
-                    <p>    
-                        <a class="btn btn-primary text-center room_entry_book" 
-                            href="confirmation.html?hotel_name=`+data[i].Hotel_id+`&description=`+data[i].Review_description+`&num=`+data[i].Room_no+`&price=`+data[i].Room_price+`"
-                            style="background-color:red;">
-                            Book Now!
-                        </a>
-                    </p>
-                </div>
-				</div>
+			var review_entry_html_string = `<div class="review_container">
+				<h1 class="bold">`+hotel_name+`</h1>
+				<h3>Rating: `+data[i].Rating+`</h2>
+				<p class="italics">by `+data[i].Customer_name+`</p>
+				<h4>Breakfast Type: `+data[i].Btype+`</h4>
+				<h4>Service Type: `+data[i].Stype+`</h4>
+				<p>`+data[i].Description+`</p>	
 			</div>`;
 			
-			console.log("hi")
-			room_entry_html_string = room_entry_html_string.replace("Hotel_Name", "Hulton @ " + data[i].City);
-			room_entry_html_string = room_entry_html_string.replace("Description", data[i].Room_description);
-			room_entry_html_string = room_entry_html_string.replace("_price", "$" + data[i].Room_price);
-			
-			
 			//convert html string to DOM
-			var room_entry = $.parseHTML(room_entry_html_string);
+			var review_entry = $.parseHTML(review_entry_html_string);
 			
-			$("#show_rooms").append(room_entry);
+			$("#see_Reviews").append(review_entry);
 		}
 	});
-	console.log("here 2")
+});
+
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
+

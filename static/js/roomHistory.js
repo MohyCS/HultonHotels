@@ -4,7 +4,8 @@ $(document).ready(function () {
 	$.get("/room_history/", function(data) {
 		console.log(data)
 		for (i = 0; i < data.length; i++) {
-			
+			let hotel_name = "Hulton @ " + data[i].City;
+
 			//html string of DOM element we want to append
 			var room_entry_html_string = `<div class="room_entry">
             <img class="room_entry_image" src="./img/cat.jpg"></img>
@@ -15,7 +16,7 @@ $(document).ready(function () {
                 <div class="room_entry_buttons">
                     <p>    
                         <a class="btn btn-primary text-center room_entry_book" 
-                            href="review.html?hotel_name=`+data[i].Hotel_id+`&description=`+data[i].Room_description+`&num=`+data[i].Room_no+`&price=`+data[i].Room_price+`"
+                            href="review.html?hotel_id=`+data[i].Hotel_id+`&num=`+data[i].Room_no+`"
                             style="background-color:red;">
                             Review the Room
                         </a>
@@ -25,7 +26,7 @@ $(document).ready(function () {
 			</div>`;
 			
 			console.log("hi")
-			room_entry_html_string = room_entry_html_string.replace("Hotel_Name", "Hulton @ " + data[i].City);
+			room_entry_html_string = room_entry_html_string.replace("Hotel_Name", hotel_name);
 			room_entry_html_string = room_entry_html_string.replace("Description", data[i].Room_description);
 			room_entry_html_string = room_entry_html_string.replace("_price", "$" + data[i].Room_price);
 			

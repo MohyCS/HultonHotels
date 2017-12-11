@@ -12,9 +12,9 @@ create table Customer(CID int, Name varchar(30), Email varchar(40), Address varc
 
 create table Review(ReviewID int, Rating varchar(2), TextComment varchar(100), HotelID int, Room_no int, bType varchar(15), sType varchar(15), CID int, primary key (ReviewID), foreign key (HotelID, Room_no) references Room(HotelID, Room_no), foreign key (HotelID, bType) references Breakfast (HotelID, bType), foreign key (HotelID, sType) references Service (HotelID, sType), foreign key (CID) references Customer(CID));
 
-create table CreditCard(Cnumber string, BillingAddr varchar(100), Name varchar(30), secCode int, Type varchar(15), ExpDate date, primary key (Cnumber));
+create table CreditCard(Cnumber char(16), BillingAddr varchar(100), Name varchar(30), secCode int, Type varchar(15), ExpDate date, primary key (Cnumber));
 
-create table Reservation(InvoiceNo int, ResDate date, TotalAmt float, CID int, CreditCard int, primary key (InvoiceNo), foreign key (CID) references Customer(CID), foreign key (CreditCard) references CreditCard(Cnumber));
+create table Reservation(InvoiceNo int, ResDate date, TotalAmt float, CID int, CreditCard char(10), primary key (InvoiceNo), foreign key (CID) references Customer(CID), foreign key (CreditCard) references CreditCard(Cnumber));
 
 create table BreakfastIncluded(InvoiceNo int, HotelID int, bType varchar(15), primary key (InvoiceNo, HotelID, bType), foreign key (InvoiceNo) references Reservation(InvoiceNo), foreign key (HotelID, bType) references Breakfast(HotelID, bType));
 

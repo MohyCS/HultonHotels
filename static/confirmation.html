@@ -84,16 +84,16 @@
 				<h5 style="text-align: center"><strong>Hotel Name: <span id="hotel_name"></span></strong></h5>
 				<h5 style="text-align: center"><strong>Description: <span id="hotel_description"></span></strong></h5>
 				<h5 style="text-align: center"><strong>Room #: <span id="room_numb"></span></strong></h5>
-				<h5 style="text-align: center"><strong>Price: <span id="room_price"></span></strong></h5>
+				<h5 style="text-align: center"><strong>Price: $<span id="room_price"></span></strong></h5>
 				
-					<form class="" method="post" action="#">
-						
+					<form>
+					
 						<div class="form-group">
 							<label for="name" class="cols-sm-2 control-label">Enter Coupon</label>
 							<div class="cols-sm-10">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
-									<input type="text" class="form-control" name="name" id="name"  placeholder="Enter Cupon"/>
+									<input type="text" class="form-control" id="coupon"  placeholder="Enter Cupon"/>
 								</div>
 							</div>
 						</div>
@@ -103,7 +103,7 @@
 							<div class="cols-sm-10">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
-									<input type="text" class="form-control" name="name" id="name"  placeholder="e.g. 01-01-2017"/>
+									<input type="text" class="form-control" id="indate"  placeholder="YYYY-MM-DD"/>
 								</div>
 							</div>
 						</div>
@@ -113,13 +113,92 @@
 							<div class="cols-sm-10">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
-									<input type="text" class="form-control" name="name" id="name"  placeholder="e.g. 01-10-2017"/>
+									<input type="text" class="form-control" id="outdate"  placeholder="YYYY-MM-DD"/>
 								</div>
 							</div>
 						</div>
+
+<div class="form-group">
+							<label for="cardtype" class="cols-sm-2 control-label">Credit Card type</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-credit-card fa-lg" aria-hidden="true"></i></span>
+                  <select name="cardtype" id="cardtype">
+                    <option value="amex">American Express</option>
+                    <option value="visa">Visa</option>
+                    <option value="mc">Mastercard</option>
+                    <option value="disc">Discover</option>
+                  </select>
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <br>
+                <p id="cardtype_msg"></p>
+              </div>
+            </div>
+                        
+            <div class="form-group">
+							<label for="cardnum" class="cols-sm-2 control-label">Credit Card number</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-credit-card fa-lg" aria-hidden="true"></i></span>
+                  <input type="text" class="form-control" name="cardnum" id="cardnum"  placeholder="Enter your credit card number"/>
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <br>
+                <p id="cardnum_msg"></p>
+              </div>
+            </div>
+
+							<div class="form-group">
+							<label for="name" class="cols-sm-2 control-label">Name on Card</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+									<input type="text" class="form-control" id="name"  placeholder="Enter Name"/>
+								</div>
+							</div>
+						</div>
+
+            
+            <div class="form-group">
+							<label for="expirdate" class="cols-sm-2 control-label">Credit Card expiration date</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-credit-card fa-lg" aria-hidden="true"></i></span>
+                  <input type="text" class="form-control" name="expirdate" id="expirdate"  placeholder="YYYY-MM-DD" />
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <br>
+                <p id="expirdate_msg"></p>
+              </div>
+            </div>
+            
+            <div class="form-group">
+							<label for="seccode" class="cols-sm-2 control-label">Credit Card Security Code</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-credit-card fa-lg" aria-hidden="true"></i></span>
+                  <input type="password" class="form-control" name="seccode" id="seccode"  placeholder="Enter your credit card security code"/>
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <br>
+                <p id="seccode_msg"></p>
+              </div>
+            </div>
+
+						<div class="form-group">
+							<label for="name" class="cols-sm-2 control-label">Enter your Billing Address</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+									<input type="text" class="form-control" id="address"  placeholder="e.g. 1600 Pennsylvania Ave."/>
+								</div>
+							</div>
+						</div>
+
                        
 						<div class="form-group ">
-							<a href="" target="_blank" type="button" id="button"  class="btn btn-primary btn-lg btn-block login-button">Submit Reservation</a>
+							<a target="_blank" type="button" onclick="submitReservation()" class="btn btn-primary btn-lg btn-block login-button">Submit Reservation</a>
 						</div>
 						
 					</form>

@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Hulton Hotels: Register</title>
+    <title>Hulton Hotels</title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -111,7 +111,7 @@
             <br>
             <div style="padding-left:137px">
             <h3 style="color: black;"> Describe your room experience </h3>
-            <textarea rows="5" cols="50">
+            <textarea id="text_review" rows="5" cols="50">
                 My food experience was... 
             </textarea>
             <br>
@@ -123,10 +123,10 @@
             <br>
             <div class="rating" style="padding-right: -500px">
                     <span><input class="star star-5" type="radio" name="rating" id="str5" value="5"><label for="str5"></label></span>
-                    <span><input type="radio" name="rating" id="str4" value="4"><label for="str4"></label></span>
-                    <span><input type="radio" name="rating" id="str3" value="3"><label for="str3"></label></span>
-                    <span><input type="radio" name="rating" id="str2" value="2"><label for="str2"></label></span>
-                    <span><input type="radio" name="rating" id="str1" value="1"><label for="str1"></label></span>
+                    <span><input type="radio" name="rating_breakfast" id="str4" value="4"><label for="str4"></label></span>
+                    <span><input type="radio" name="rating_breakfast" id="str3" value="3"><label for="str3"></label></span>
+                    <span><input type="radio" name="rating_breakfast" id="str2" value="2"><label for="str2"></label></span>
+                    <span><input type="radio" name="rating_breakfast" id="str1" value="1"><label for="str1"></label></span>
             </div>
             <br>
             <br>
@@ -147,10 +147,10 @@
                         <br>
                         <div class="rating" style="padding-left: -500px">
                                 <span><input class="star star-5" type="radio" name="rating" id="str5" value="5"><label for="str5"></label></span>
-                                <span><input type="radio" name="rating" id="str4" value="4"><label for="str4"></label></span>
-                                <span><input type="radio" name="rating" id="str3" value="3"><label for="str3"></label></span>
-                                <span><input type="radio" name="rating" id="str2" value="2"><label for="str2"></label></span>
-                                <span><input type="radio" name="rating" id="str1" value="1"><label for="str1"></label></span>
+                                <span><input type="radio" name="rating_service" id="str4" value="4"><label for="str4"></label></span>
+                                <span><input type="radio" name="rating_service" id="str3" value="3"><label for="str3"></label></span>
+                                <span><input type="radio" name="rating_service" id="str2" value="2"><label for="str2"></label></span>
+                                <span><input type="radio" name="rating_service" id="str1" value="1"><label for="str1"></label></span>
                         </div>
                         <br>
                         <br>
@@ -166,7 +166,7 @@
           <br>
           <br>
           <div class="form-group ">
-                <a href="index.html" target="_blank" type="button" id="button" class="btn btn-primary btn-sl btn-block login-button">SUBMIT</a>
+                <a target="_blank" onclick="submitReview()" type="button" id="button" class="btn btn-primary btn-sl btn-block login-button">SUBMIT</a>
             </div>
             <br>
             <br>
@@ -213,6 +213,8 @@
 
     <!-- Custom scripts for this template -->
     <script src="js/creative.min.js"></script>
+
+    <script src="js/review.js"></script>
 
   </body>
 

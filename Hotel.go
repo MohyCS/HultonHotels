@@ -9,6 +9,8 @@ import(
 	"encoding/json"
 	"math/rand"
 	"strconv"
+	"strings"
+	"fmt"
 )
 
 //make the db accessable in all methods
@@ -21,6 +23,17 @@ type room_entry struct {
 	Room_description string
 	Room_no int
 	Room_price float64
+}
+
+//review entry returned to see reviews page
+type review_entry struct {
+	City string
+	Room_no int
+	Description string
+	Rating string
+	Customer_name string
+	Btype string
+	Stype string
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -85,12 +98,8 @@ func setToken(w http.ResponseWriter, r *http.Request, loginOrRegister int) {
 	} else {
 		//register user
 		name := r.Form["name"][0]
-		address := r.Form["address"][0]
 		phone_no := r.Form["phone_no"][0]
-
-		cardnum := r.Form["cardnum"][0]
-		seccode := r.Form["seccode"][0]
-		cardtype := r.Form["cardtype"][0]
+		address := r.Form["address"][0]
 
 		//check to see if user is already in the database
 		var email1 string
@@ -106,13 +115,6 @@ func setToken(w http.ResponseWriter, r *http.Request, loginOrRegister int) {
 		_, err = db.Exec("INSERT INTO Customer values(?, ?, ?, ?, ?)", CID, name, email, address, phone_no)
 		if err != nil {
 			log.Println("INSERTING USER FAILED")
-			log.Fatal(err)
-		}
-
-		//add credit card into database
-		_, err = db.Exec("INSERT INTO CreditCard values(?, ?, ?, ?, ?)", cardnum, address, name, seccode, cardtype, CID)
-		if err != nil {
-			log.Println("INSERTING CREDIT CARD FAILED")
 			log.Fatal(err)
 		}
 
@@ -230,23 +232,101 @@ func room_history_fetcher(w http.ResponseWriter, r *http.Request) {
 
 func submitReview(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()	//parse url parameters passed
+	log.Println(r.Form)
+	cookie, err := r.Cookie("Auth")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//customer ID
+	CID, err := strconv.Atoi(cookie.Value)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 
 	//parse post data
+	log.Println("1")
 	rating := r.Form["rating"][0]
-	comment := r.Form["comment"][0]
+	log.Println("2")
+	comment := r.Form["description"][0]
+	log.Println("3")
 	hotel_id := r.Form["hotel_id"][0]
+	log.Println(hotel_id)
 	room_no := r.Form["room_no"][0]
-	btype := r.Form["btype"][0]
-	stype := r.Form["stype"][0]
-	CID := r.Form["CID"][0]
+
+	//check to see which breakfast is associated to the hotel
+	var bType string
+	err = db.QueryRow("SELECT b.bType from Breakfast b where b.HotelID=?", hotel_id).Scan(&bType)
+
+	if err == sql.ErrNoRows {
+		log.Fatal("No Breakfast option. Not possible")
+	} else if err != nil {
+		log.Fatal(err)
+	}
+
+	//check to see which service is associated to the hotel
+	var sType string
+	err = db.QueryRow("SELECT s.sType from Service s where s.HotelID=?", hotel_id).Scan(&sType)
+
+	if err == sql.ErrNoRows {
+		log.Fatal("No Service option. Not possible")
+	} else if err != nil {
+		log.Fatal(err)
+	}
 
 	//insert review into database
-	_, err := db.Exec("INSERT INTO Review values(?, ?, ?, ?, ?, ?, ?)", rating, comment, hotel_id, room_no, btype, stype, CID)
+	reviewID := rand.Intn(32767)	//generate random review id
+
+	_, err = db.Exec("INSERT INTO Review values(?, ?, ?, ?, ?, ?, ?, ?)", reviewID, rating, comment, hotel_id, room_no, bType, sType, CID)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	return
+}
+
+func calcDayDifference(indate string, outdate string) int {
+	//calculate number of days from outdate - indate
+	date1 := strings.Split(indate, "-")
+	date2 := strings.Split(outdate, "-")
+
+	yr1, err := strconv.Atoi(date1[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	m1, err := strconv.Atoi(date1[1])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	d1, err := strconv.Atoi(date1[2])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	yr2, err := strconv.Atoi(date2[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	m2, err := strconv.Atoi(date2[1])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	d2, err := strconv.Atoi(date2[2])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dateIn :=  time.Date(yr1, time.Month(m1), d1, 0, 0, 0, 0, time.UTC)
+	dateOut :=  time.Date(yr2, time.Month(m2), d2, 0, 0, 0, 0, time.UTC)
+
+	//calculates difference between 2 dates
+	difference := dateOut.Sub(dateIn)
+	return int(difference.Hours() / 24)
 }
 
 func makeReservation(w http.ResponseWriter, r *http.Request) {
@@ -256,35 +336,105 @@ func makeReservation(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	//customer ID
 	CID, err := strconv.Atoi(cookie.Value)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	//get credit card for that customer
-	var string cnumber;
-	err := db.QueryRow("SELECT c.Cnumber from CreditCard c, Customer c1 where c.CID=c1.CID and c1.Email=?", email).Scan(&cnumber)
-
-	if err == sql.ErrNoRows {
-		//TODO: should return error message to the client
-		log.Fatal("No customer matching those credentials")
-	} else if err != nil {
-       		log.Fatal(err)
-	}
-
 	InvoiceNo := rand.Intn(32767)	//generate random Invoice No
 	totalamt := r.Form["price"][0]	//total amount
 	year, month, day := time.Now().Date()	//resdate info
+	resdate := fmt.Sprintf("%d-%d-%d", year, month, day)
 
-	_, err := db.Exec("INSERT INTO Reservation values(?, ?, ?, ?, ?, ?)", InvoiceNo, year+"-"+month+"-"+day, totalamt, cnumber)
+	//credit card information
+	cardnum := strings.TrimSpace(r.Form["cardnum"][0])
+	log.Println(cardnum)
+	seccode := r.Form["seccode"][0]
+	cardtype := r.Form["cardtype"][0]
+	billingaddress := r.Form["address"][0]
+	name := r.Form["name"][0]
+	expirdate := r.Form["expirdate"][0]
+
+	//check to see if card is already in the database
+	var a string
+	err = db.QueryRow("SELECT c.Cnumber from CreditCard c where c.Cnumber=?", cardnum).Scan(&a)
+
+	if err == sql.ErrNoRows {
+		log.Println("Inserting credit card into database")
+
+		//add credit card to database
+		_, err = db.Exec("INSERT INTO CreditCard values(?, ?, ?, ?, ?, ?)", cardnum, billingaddress, name, seccode, cardtype, expirdate)
+		if err != nil {
+			log.Println("INSERTING CREDIT CARD FAILED")
+			log.Fatal(err)
+		}
+	} else if err != nil {
+		log.Fatal(err)
+	}
+
+	//insert into Table Reservation
+	_, err = db.Exec("INSERT INTO Reservation values(?, ?, ?, ?, ?)", InvoiceNo, resdate, totalamt, CID, cardnum)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	indate := strings.Split(r.Form["indate"][0], "-")	//Date reservation starts
-	outdate := strings.Split(r.Form["outdate"][0], "-")	//Date reservation ends
+	indate := r.Form["indate"][0]		//Date reservation starts
+	outdate := r.Form["outdate"][0]		//Date reservation ends
+	hotelID := r.Form["hotelID"][0]		//id of hotel for reservation
+	room_no := r.Form["room_no"][0]		//room number being reserved
+	numDays := calcDayDifference(indate, outdate)
+
+	//insert into Table RoomReserve
+	_, err = db.Exec("INSERT INTO RoomReserve values(?, ?, ?, ?, ?, ?)", InvoiceNo, hotelID, room_no, outdate, indate, numDays)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func getReviews(w http.ResponseWriter, r *http.Request) {
+	//parse form
+	r.ParseForm()
+
+	//get hotelid and room_id
+	hotel_id := r.Form["hotel_id"][0]
+	room_no := r.Form["room_no"][0]
+
+	var reviews []review_entry
+
+	//gets reviews that are for that Hotel and room_no
+	rows, err := db.Query("SELECT h.City, r.Rating, r.TextComment, r.Room_no, r.bType, r.sType, c.Name from Review r, Customer c, Hotel h where r.CID=c.CID and h.HotelID=r.HotelID and r.HotelID=? and r.Room_no=?", hotel_id, room_no)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var entry review_entry
+		if err := rows.Scan(&(entry.City), &(entry.Rating), &(entry.Description), &(entry.Room_no), &(entry.Btype), &(entry.Stype), &(entry.Customer_name)); err != nil {
+			log.Fatal(err)
+		}
+		log.Println(entry)
+
+		//append room_entry to the rooms array
+		reviews = append(reviews, entry)
+	}
+
+
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	json1, err := json.Marshal(reviews)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(json1)
 }
 
 func main() {
@@ -307,6 +457,7 @@ func main() {
 	http.HandleFunc("/submit_review/", submitReview)
 	http.HandleFunc("/make_reservation/", makeReservation)
 	http.HandleFunc("/login_status/", checkLoginStatus)
+	http.HandleFunc("/review_data/", getReviews)
 
 	//listens on port 8081
 	log.Fatal(http.ListenAndServe(":8081", nil))
