@@ -14,7 +14,7 @@ create table Review(ReviewID int, Rating varchar(2), TextComment varchar(100), H
 
 create table CreditCard(Cnumber char(16), BillingAddr varchar(100), Name varchar(30), secCode int, Type varchar(15), ExpDate date, primary key (Cnumber));
 
-create table Reservation(InvoiceNo int, ResDate date, TotalAmt float, CID int, CreditCard char(10), primary key (InvoiceNo), foreign key (CID) references Customer(CID), foreign key (CreditCard) references CreditCard(Cnumber));
+create table Reservation(InvoiceNo int, ResDate date, TotalAmt float, CID int, CreditCard char(16), primary key (InvoiceNo), foreign key (CID) references Customer(CID), foreign key (CreditCard) references CreditCard(Cnumber));
 
 create table BreakfastIncluded(InvoiceNo int, HotelID int, bType varchar(15), primary key (InvoiceNo, HotelID, bType), foreign key (InvoiceNo) references Reservation(InvoiceNo), foreign key (HotelID, bType) references Breakfast(HotelID, bType));
 

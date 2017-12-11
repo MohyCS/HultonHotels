@@ -1,6 +1,7 @@
 function getRoomsByState() {
 	console.log("here")
-	var state = $('#room_state_selection').find(":selected").text();
+	var state = $('#room_state_selection').find(":selected").val();
+	console.log(state)
 
 	$.get("/room_data/", {state: state}, function(data) {
 		console.log(data)

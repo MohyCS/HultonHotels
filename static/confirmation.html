@@ -87,16 +87,6 @@
 				<h5 style="text-align: center"><strong>Price: $<span id="room_price"></span></strong></h5>
 				
 					<form>
-					
-						<div class="form-group">
-							<label for="name" class="cols-sm-2 control-label">Enter Coupon</label>
-							<div class="cols-sm-10">
-								<div class="input-group">
-									<span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
-									<input type="text" class="form-control" id="coupon"  placeholder="Enter Cupon"/>
-								</div>
-							</div>
-						</div>
 						
 						<div class="form-group">
 							<label for="name" class="cols-sm-2 control-label">Start Date</label>
@@ -118,6 +108,41 @@
 							</div>
 						</div>
 
+<div class="form-group">
+							<label for="cardtype" class="cols-sm-2 control-label">Breakfast Option</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-credit-card fa-lg" aria-hidden="true"></i></span>
+                  <select name="breakfast" id="breakfast">
+                    <option value="vegetarian">Vegetarian</option>
+                    <option value="vegan">Vegan</option>
+                    <option value="regular">Regular</option>
+                  </select>
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <br>
+                <p id="cardtype_msg"></p>
+              </div>
+            </div>
+
+<div class="form-group">
+							<label for="cardtype" class="cols-sm-2 control-label">Service Option</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-credit-card fa-lg" aria-hidden="true"></i></span>
+                  <select name="service" id="service">
+                    <option value="Full">Premium Service (Cleaning, Laundry, Spa)</option>
+                    <option value="Half">Regular Service (Cleaning, Laundry)</option>
+                    <option value="No">No Service</option>
+                  </select>
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <br>
+                <p id="cardtype_msg"></p>
+              </div>
+            </div>
+ 
+ 
 <div class="form-group">
 							<label for="cardtype" class="cols-sm-2 control-label">Credit Card type</label>
 							<div class="cols-sm-10">

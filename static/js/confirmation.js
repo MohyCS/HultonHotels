@@ -29,7 +29,6 @@ function submitReservation() {
 	var hotelID = getParameterByName('hotel_id');
 	var room_no = getParameterByName('num');
 	var price = getParameterByName('price');
-	var coupon = $("#coupon").val()
 	var indate = $("#indate").val()
 	var outdate = $("#outdate").val()
 	var seccode = $("#seccode").val()
@@ -38,13 +37,14 @@ function submitReservation() {
 	var cardnum = $("#cardnum").val()
 	var expirdate = $("#expirdate").val()
 	var name = $("#name").val()
+	var breakfast = $("#breakfast").val()
+	var service = $("#service").val()
 
 	//make ajax request
 	$.post("/make_reservation/", {
 		hotelID: hotelID,
 		room_no: room_no,
 		price: price,
-		coupon: coupon,
 		indate: indate,
 		outdate: outdate,
 		seccode: seccode,
@@ -52,7 +52,9 @@ function submitReservation() {
 		cardtype: cardtype,
 		cardnum: cardnum,
 		expirdate: expirdate,
-		name: name
+		name: name,
+		breakfast: breakfast,
+		service: service
 	}, function(data) {
 		console.log(data);
 	});

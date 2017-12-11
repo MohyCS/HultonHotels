@@ -41,7 +41,6 @@
         $('input:radio').change(
           function(){
             var userRating = this.value;
-            alert(userRating);
         }); 
     });
     </script>
@@ -96,7 +95,7 @@
             <br>
             <br>
             <!--ROOM REVIEW SEGMENT-->  
-            <h3 style="color: black; padding-left: 15%;"> Rate your room </h3>
+            <h3 style="color: black; padding-left: 15%;"> Rate your overall experience </h3>
             <br>
             <div class="rating">
                     <span><input class="star star-5" type="radio" name="rating" id="str5" value="5"><label for="str5"></label></span>
@@ -110,61 +109,11 @@
             <br>
             <br>
             <div style="padding-left:137px">
-            <h3 style="color: black;"> Describe your room experience </h3>
-            <textarea id="text_review" rows="5" cols="50">
-                My food experience was... 
-            </textarea>
+            <h3 style="color: black;"> Describe your overall experience </h3>
+            <textarea id="text_review" rows="5" cols="50" placeholder="Include anything about breakfast, service, and room"></textarea>
             <br>
             <br>
             <br>
-            <br>
-            <!--BREAKFAST REVIEW SEGMENT-->
-            <h3 style="color: black;" > Rate your breakfast </h3>
-            <br>
-            <div class="rating" style="padding-right: -500px">
-                    <span><input class="star star-5" type="radio" name="rating" id="str5" value="5"><label for="str5"></label></span>
-                    <span><input type="radio" name="rating_breakfast" id="str4" value="4"><label for="str4"></label></span>
-                    <span><input type="radio" name="rating_breakfast" id="str3" value="3"><label for="str3"></label></span>
-                    <span><input type="radio" name="rating_breakfast" id="str2" value="2"><label for="str2"></label></span>
-                    <span><input type="radio" name="rating_breakfast" id="str1" value="1"><label for="str1"></label></span>
-            </div>
-            <br>
-            <br>
-            <br>
-            <br>
-            <div>
-            <h3 style="color: black;"> Describe your breakfast experience </h3>
-            <textarea rows="5" cols="50">
-                My breakfast experience was... 
-            </textarea>
-            </div>
-            <br>
-            <br>
-            <br>
-            <br>
-                        <!--SERVICE REVIEW SEGMENT-->
-                        <h3 style="color: black;"> Rate your service </h3>
-                        <br>
-                        <div class="rating" style="padding-left: -500px">
-                                <span><input class="star star-5" type="radio" name="rating" id="str5" value="5"><label for="str5"></label></span>
-                                <span><input type="radio" name="rating_service" id="str4" value="4"><label for="str4"></label></span>
-                                <span><input type="radio" name="rating_service" id="str3" value="3"><label for="str3"></label></span>
-                                <span><input type="radio" name="rating_service" id="str2" value="2"><label for="str2"></label></span>
-                                <span><input type="radio" name="rating_service" id="str1" value="1"><label for="str1"></label></span>
-                        </div>
-                        <br>
-                        <br>
-                        <br>
-                        <br>
-                        <div>
-                        <h3 style="color: black;"> Describe your service experience </h3>
-                        <textarea rows="5" cols="50">
-                            My service experience was... 
-                        </textarea>
-                        </div>
-          </div>
-          <br>
-          <br>
           <div class="form-group ">
                 <a target="_blank" onclick="submitReview()" type="button" id="button" class="btn btn-primary btn-sl btn-block login-button">SUBMIT</a>
             </div>

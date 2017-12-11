@@ -110,6 +110,7 @@ func setToken(w http.ResponseWriter, r *http.Request, loginOrRegister int) {
 		}
 
 		//if user doesn't already exit, register the user
+		rand.Seed(time.Now().UTC().UnixNano())
 		CID = rand.Intn(32767)		//generate random customer ID
 		//create user in database
 		_, err = db.Exec("INSERT INTO Customer values(?, ?, ?, ?, ?)", CID, name, email, address, phone_no)
@@ -255,9 +256,9 @@ func submitReview(w http.ResponseWriter, r *http.Request) {
 	log.Println(hotel_id)
 	room_no := r.Form["room_no"][0]
 
-	//check to see which breakfast is associated to the hotel
+	//find breakfast based on reservation
 	var bType string
-	err = db.QueryRow("SELECT b.bType from Breakfast b where b.HotelID=?", hotel_id).Scan(&bType)
+	err = db.QueryRow("SELECT b.bType from Breakfast b, Reservation r, BreakfastIncluded b1, RoomReserve r1 where b1.InvoiceNo=r.InvoiceNo and b1.bType=b.bType and b1.HotelID=b.HotelID and r1.InvoiceNo=r.InvoiceNo and r1.HotelID=? and r1.Room_no=? and r.CID=?", hotel_id, room_no, CID).Scan(&bType)
 
 	if err == sql.ErrNoRows {
 		log.Fatal("No Breakfast option. Not possible")
@@ -267,7 +268,7 @@ func submitReview(w http.ResponseWriter, r *http.Request) {
 
 	//check to see which service is associated to the hotel
 	var sType string
-	err = db.QueryRow("SELECT s.sType from Service s where s.HotelID=?", hotel_id).Scan(&sType)
+	err = db.QueryRow("SELECT s.sType from Service s, Reservation r, ServiceIncluded s1, RoomReserve r1 where s1.InvoiceNo=r.InvoiceNo and s1.sType=s.sType and s1.HotelID=s.HotelID and r1.InvoiceNo=r.InvoiceNo and r1.HotelID=? and r1.Room_no=? and r.CID=?", hotel_id, room_no, CID).Scan(&sType)
 
 	if err == sql.ErrNoRows {
 		log.Fatal("No Service option. Not possible")
@@ -276,6 +277,7 @@ func submitReview(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//insert review into database
+	rand.Seed(time.Now().UTC().UnixNano())
 	reviewID := rand.Intn(32767)	//generate random review id
 
 	_, err = db.Exec("INSERT INTO Review values(?, ?, ?, ?, ?, ?, ?, ?)", reviewID, rating, comment, hotel_id, room_no, bType, sType, CID)
@@ -343,6 +345,7 @@ func makeReservation(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
+	rand.Seed(time.Now().UTC().UnixNano())
 	InvoiceNo := rand.Intn(32767)	//generate random Invoice No
 	totalamt := r.Form["price"][0]	//total amount
 	year, month, day := time.Now().Date()	//resdate info
@@ -350,7 +353,6 @@ func makeReservation(w http.ResponseWriter, r *http.Request) {
 
 	//credit card information
 	cardnum := strings.TrimSpace(r.Form["cardnum"][0])
-	log.Println(cardnum)
 	seccode := r.Form["seccode"][0]
 	cardtype := r.Form["cardtype"][0]
 	billingaddress := r.Form["address"][0]
@@ -377,6 +379,7 @@ func makeReservation(w http.ResponseWriter, r *http.Request) {
 	//insert into Table Reservation
 	_, err = db.Exec("INSERT INTO Reservation values(?, ?, ?, ?, ?)", InvoiceNo, resdate, totalamt, CID, cardnum)
 	if err != nil {
+		log.Println("Error in inserting into reservation")
 		log.Fatal(err)
 	}
 
@@ -385,6 +388,22 @@ func makeReservation(w http.ResponseWriter, r *http.Request) {
 	hotelID := r.Form["hotelID"][0]		//id of hotel for reservation
 	room_no := r.Form["room_no"][0]		//room number being reserved
 	numDays := calcDayDifference(indate, outdate)
+
+	breakfast := r.Form["breakfast"][0]
+	service := r.Form["service"][0]
+
+	//insert into Table Breakfast Included
+	_, err = db.Exec("INSERT INTO BreakfastIncluded values(?, ?, ?)", InvoiceNo, hotelID, breakfast)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//insert into Table Service Included
+	_, err = db.Exec("INSERT INTO ServiceIncluded values(?, ?, ?)", InvoiceNo, hotelID, service)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 
 	//insert into Table RoomReserve
 	_, err = db.Exec("INSERT INTO RoomReserve values(?, ?, ?, ?, ?, ?)", InvoiceNo, hotelID, room_no, outdate, indate, numDays)
