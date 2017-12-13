@@ -62,7 +62,7 @@
 			<div class="row main">
 				<div  class="col-lg-5 mx-auto text-left" style="margin-bottom: 4cm;" >
 				<h5 style="text-align: center"><strong>Sign up once and book any of our rooms!</strong></h5>
-					<form class="" method="post" action="/register/">
+					<form class="" method="post" onsubmit="return errorChecking()" action="/register/">
 						
 						<div class="form-group">
 							<label for="name" class="cols-sm-2 control-label">Your Name</label>
@@ -204,6 +204,7 @@
     <script src="js/creative.min.js"></script>
 
     <script src="js/validation.js"></script>
+    <script src="js/register.js"></script>
   </body>
 
 </html>

@@ -1,4 +1,6 @@
 function getRoomsByState() {
+	//clear div of previous elements
+	$("#show_rooms").html('');
 	console.log("here")
 	var state = $('#room_state_selection').find(":selected").val();
 	console.log(state)
