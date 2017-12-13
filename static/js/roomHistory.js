@@ -1,7 +1,10 @@
 $(document).ready(function () {
 	console.log("here")
 
-	$.get("/room_history/", function(data) {
+	$.ajax({
+		url: "/room_history/", 
+		type: 'get',
+		success: function(data) {
 		console.log(data)
 		for (i = 0; i < data.length; i++) {
 			let hotel_name = "Hulton @ " + data[i].City;
@@ -36,6 +39,16 @@ $(document).ready(function () {
 			
 			$("#show_rooms").append(room_entry);
 		}
-	});
-	console.log("here 2")
+	},
+	error: function(XMLHttpRequest, textStatus, errorThrown) {
+		let status = XMLHttpRequest.status;
+		if (status == 401) {
+			if (confirm("NOT LOGGED IN, REDIRECTING TO LOG IN PAGE ON OK")) {
+				window.location="http://localhost:8081/";
+			}
+		} else {
+			console.log(textStatus);	
+		}
+	},
+});
 });

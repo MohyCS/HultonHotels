@@ -23,6 +23,7 @@ type room_entry struct {
 	Room_description string
 	Room_no int
 	Room_price float64
+	Room_type string
 }
 
 //review entry returned to see reviews page
@@ -34,6 +35,12 @@ type review_entry struct {
 	Customer_name string
 	Btype string
 	Stype string
+}
+
+type breakfast_service_price struct {
+	Breakfast_price float64
+	Service_price float64
+	Num_days int
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -121,7 +128,7 @@ func setToken(w http.ResponseWriter, r *http.Request, loginOrRegister int) {
 
 	}
 
-	expireCookie := time.Now().Add(time.Hour * 1)
+	expireCookie := time.Now().Add(time.Hour * 10)
 
 	// Place the token in the client's cookie 
 	cookie := http.Cookie{Name: "Auth", Domain: "localhost", Path: "/", Value: strconv.Itoa(CID), Expires: expireCookie}
@@ -149,7 +156,7 @@ func room_data_fetcher(w http.ResponseWriter, r *http.Request) {
 	state := r.URL.Query()["state"][0]	//gets state query parameter that user passed on GET request
 	
 	//gets hotel rooms available in that state
-	rows, err := db.Query("SELECT r.HotelID, h.City, r.Description, r.Room_no, r.Price FROM Room r, Hotel h WHERE r.HotelID = h.HotelID and h.State=?", state)
+	rows, err := db.Query("SELECT r.HotelID, h.City, r.Description, r.Room_no, r.Price, r.Type FROM Room r, Hotel h WHERE r.HotelID = h.HotelID and h.State=?", state)
 	log.Println(rows)
 	if err != nil {
         	log.Fatal(err)
@@ -158,7 +165,7 @@ func room_data_fetcher(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
         	var entry room_entry
-        	if err := rows.Scan(&(entry.Hotel_id), &(entry.City),  &(entry.Room_description), &(entry.Room_no), &(entry.Room_price)); err != nil {
+        	if err := rows.Scan(&(entry.Hotel_id), &(entry.City),  &(entry.Room_description), &(entry.Room_no), &(entry.Room_price), &(entry.Room_type)); err != nil {
                 	log.Fatal(err)
         	}
 			
@@ -186,10 +193,17 @@ func room_data_fetcher(w http.ResponseWriter, r *http.Request) {
 func room_history_fetcher(w http.ResponseWriter, r *http.Request) {
 	//get authentication cookie which contains CID as value
 	cookie, err := r.Cookie("Auth")
-	if err != nil {
+
+	if err == http.ErrNoCookie {
+		log.Println("NO COOKIE. USER MUST LOG IN");
+
+		//return error if Cookie isn't there
+		http.Error(w, "User Not Logged In", 401)
+		return
+	} else if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	CID, err := strconv.Atoi(cookie.Value)
 	if err != nil {
 		log.Fatal(err)
@@ -200,23 +214,23 @@ func room_history_fetcher(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query("SELECT r.HotelID, h.City, r.Description, r.Room_no, r.Price FROM Room r, Hotel h, Reservation q, RoomReserve p, Customer c  WHERE r.HotelID = h.HotelID and c.CID = q.CID and p.InvoiceNo=q.InvoiceNo and p.HotelID=r.HotelID and p.Room_no=r.Room_no and c.CID=?", CID)
 	log.Println(rows)
 	if err != nil {
-        	log.Fatal(err)
+		log.Fatal(err)
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-        	var entry room_entry
-        	if err := rows.Scan(&(entry.Hotel_id), &(entry.City), &(entry.Room_description), &(entry.Room_no), &(entry.Room_price)); err != nil {
-                	log.Fatal(err)
-        	}
-			
+		var entry room_entry
+		if err := rows.Scan(&(entry.Hotel_id), &(entry.City), &(entry.Room_description), &(entry.Room_no), &(entry.Room_price)); err != nil {
+			log.Fatal(err)
+	}
+
 		//append room_entry to the rooms array
 		rooms = append(rooms, entry)
 	}
-	
-	
+
+
 	if err := rows.Err(); err != nil {
-        	log.Fatal(err)
+		log.Fatal(err)
 	}
 
 	json1, err := json.Marshal(rooms)
@@ -235,7 +249,14 @@ func submitReview(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()	//parse url parameters passed
 	log.Println(r.Form)
 	cookie, err := r.Cookie("Auth")
-	if err != nil {
+
+	if err == http.ErrNoCookie {
+		log.Println("NO COOKIE. USER MUST LOG IN");
+
+		//return error if Cookie isn't there
+		http.Error(w, "User Not Logged In", 401)
+		return
+	} else if err != nil {
 		log.Fatal(err)
 	}
 
@@ -335,7 +356,13 @@ func makeReservation(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()	//parse url parameters passed
 
 	cookie, err := r.Cookie("Auth")
-	if err != nil {
+	if err == http.ErrNoCookie {
+		log.Println("NO COOKIE. USER MUST LOG IN");
+
+		//return error if Cookie isn't there
+		http.Error(w, "User Not Logged In", 401)
+		return
+	} else if err != nil {
 		log.Fatal(err)
 	}
 
@@ -387,7 +414,7 @@ func makeReservation(w http.ResponseWriter, r *http.Request) {
 	outdate := r.Form["outdate"][0]		//Date reservation ends
 	hotelID := r.Form["hotelID"][0]		//id of hotel for reservation
 	room_no := r.Form["room_no"][0]		//room number being reserved
-	numDays := calcDayDifference(indate, outdate)
+	numDays := r.Form["num_days"][0]
 
 	breakfast := r.Form["breakfast"][0]
 	service := r.Form["service"][0]
@@ -456,6 +483,55 @@ func getReviews(w http.ResponseWriter, r *http.Request) {
 	w.Write(json1)
 }
 
+
+func getBreakfastServicePrice(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	hotel_id := r.Form["hotel_id"][0]
+	breakfast := r.Form["breakfast"][0]
+	service := r.Form["service"][0]
+	indate := r.Form["indate"][0]
+	outdate := r.Form["outdate"][0]
+
+
+	//get Price of breakfast
+	var b_price float64
+	err := db.QueryRow("SELECT b.bPrice from Breakfast b where b.HotelID=? and b.bType=?", hotel_id, breakfast).Scan(&b_price)
+
+	if err == sql.ErrNoRows {
+		log.Fatal("Should be a breakfast option")
+	} else if err != nil {
+		log.Fatal(err)
+	}
+
+	//get Price of Service
+	var s_price float64
+	err = db.QueryRow("SELECT s.sCost from Service s where s.HotelID=? and s.sType=?", hotel_id, service).Scan(&s_price)
+
+	if err == sql.ErrNoRows {
+		log.Fatal("Should be a service option")
+	} else if err != nil {
+		log.Fatal(err)
+	}
+
+	//calculate number of days between indate and outdate
+	numDays := calcDayDifference(indate, outdate)
+
+	result := breakfast_service_price{Breakfast_price: b_price, Service_price: s_price, Num_days: numDays}
+	log.Println(result)
+
+	json1, err := json.Marshal(result)
+	log.Println(string(json1))
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(json1)
+}
+
+
 func main() {
 	//open database
 	var err error
@@ -477,6 +553,7 @@ func main() {
 	http.HandleFunc("/make_reservation/", makeReservation)
 	http.HandleFunc("/login_status/", checkLoginStatus)
 	http.HandleFunc("/review_data/", getReviews)
+	http.HandleFunc("/get_breakfast_service_price/", getBreakfastServicePrice)
 
 	//listens on port 8081
 	log.Fatal(http.ListenAndServe(":8081", nil))

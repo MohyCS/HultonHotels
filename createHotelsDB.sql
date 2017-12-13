@@ -1,4 +1,4 @@
-create table Hotel(HotelID int, Street varchar(15), City varchar(15), State char(2), Country varchar(20), Zip char(5), primary key(HotelID));
+create table Hotel(HotelID int, Street varchar(15), City varchar(20), State char(2), Country varchar(20), Zip char(5), primary key(HotelID));
 
 create table Phone_no(phone_no char(10), HotelID int, primary key(phone_no), foreign key (HotelID) references Hotel(HotelID) on delete cascade);
 
@@ -10,7 +10,7 @@ create table Room(HotelID int, Room_no int, Price float, Capacity int, Floor_no 
 
 create table Customer(CID int, Name varchar(30), Email varchar(40), Address varchar(100), Phone_no char(10), primary key(CID));
 
-create table Review(ReviewID int, Rating varchar(2), TextComment varchar(100), HotelID int, Room_no int, bType varchar(15), sType varchar(15), CID int, primary key (ReviewID), foreign key (HotelID, Room_no) references Room(HotelID, Room_no), foreign key (HotelID, bType) references Breakfast (HotelID, bType), foreign key (HotelID, sType) references Service (HotelID, sType), foreign key (CID) references Customer(CID));
+create table Review(ReviewID int, Rating varchar(2), TextComment varchar(500), HotelID int, Room_no int, bType varchar(15), sType varchar(15), CID int, primary key (ReviewID), foreign key (HotelID, Room_no) references Room(HotelID, Room_no), foreign key (HotelID, bType) references Breakfast (HotelID, bType), foreign key (HotelID, sType) references Service (HotelID, sType), foreign key (CID) references Customer(CID));
 
 create table CreditCard(Cnumber char(16), BillingAddr varchar(100), Name varchar(30), secCode int, Type varchar(15), ExpDate date, primary key (Cnumber));
 

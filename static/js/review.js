@@ -17,6 +17,11 @@ function submitReview() {
 	var hotelID = getParameterByName('hotel_id');
 	var room_no = getParameterByName('num');
 	var rating_description = $("#text_review").val()
+
+	if (rating_description.length >= 500) {
+		alert("REVIEW MUST BE LESS THAN 500 characters")
+		return;
+	}
 	console.log(hotelID)
 
 	//make ajax request
@@ -27,9 +32,16 @@ function submitReview() {
 		rating: rating
 	}, function(data) {
 		console.log(data);
+		window.location="http://localhost:8081/startpage.html"
+	}).fail(function(e) {
+		if (e.status == 401) {
+			if (confirm("NOT LOGGED IN, REDIRECTING TO LOG IN PAGE ON OK")) {
+				window.location="http://localhost:8081/";
+			}
+		} else {
+			console.log("ERROR")
+		}
 	});
-
-	window.location="http://localhost:8081/startpage.html"
 
 }
 

@@ -9,14 +9,20 @@ function getRoomsByState() {
 		for (i = 0; i < data.length; i++) {
 			
 			let hotel_name = "Hulton @ " + data[i].City;
+			var imgsrc;
+			if (data[i].Room_type == 'vip') {
+				imgsrc = "./img/vip.jpg";
+			} else {
+				imgsrc = "./img/reg.jpg";
+			}
 
 			//html string of DOM element we want to append
 			var room_entry_html_string = `<div class="room_entry">
-            <img class="room_entry_image" src="./img/cat.jpg"></img>
+            <img class="room_entry_image" src=`+imgsrc+`></img>
             <div class="room_entry_data">
-                <h2 class="room_entry_title">Hotel_Name</h2>
-                <p class="room_entry_description">Description</p>
-				<p class="room_entry_description">Price: _price</p>
+                <h2 class="room_entry_title">`+hotel_name+`</h2>
+                <p class="room_entry_description">`+data[i].Room_description+`</p>
+				<p class="room_entry_description">Price: $`+data[i].Room_price+` per night</p>
                 <div class="room_entry_buttons">
 		    <p>    
                         <a class="btn btn-primary text-center room_entry_book" 
@@ -35,12 +41,6 @@ function getRoomsByState() {
                 </div>
 				</div>
 			</div>`;
-			
-			console.log("hi")
-			room_entry_html_string = room_entry_html_string.replace("Hotel_Name", hotel_name);
-			room_entry_html_string = room_entry_html_string.replace("Description", data[i].Room_description);
-			room_entry_html_string = room_entry_html_string.replace("_price", "$" + data[i].Room_price);
-			
 			
 			//convert html string to DOM
 			var room_entry = $.parseHTML(room_entry_html_string);
