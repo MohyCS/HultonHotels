@@ -33,5 +33,5 @@ function errorChecking() {
 		return false;
 	}
 
-	return false;
+	return true;
 }
